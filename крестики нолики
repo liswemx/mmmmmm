@@ -1,0 +1,74 @@
+def print_board(board):
+    print("\n")
+    for i in range(3):
+        row = " | ".join(board[i * 3:(i + 1) * 3])
+        print(row)
+        if i != 2:
+            print("-" * 9)
+    print("\n")
+
+
+def check_winner(board):
+    winning_combinations = [
+        (0, 1, 2), (3, 4, 5), (6, 7, 8),
+        (0, 3, 6), (1, 4, 7), (2, 5, 8),
+        (0, 4, 8), (2, 4, 6)
+    ]
+
+    for a, b, c in winning_combinations:
+        if board[a] == board[b] == board[c] and board[a] != " ":
+            return board[a]
+
+    return None
+
+
+def is_draw(board):
+    return " " not in board
+
+
+def play():
+    board = [" "] * 9
+    current_player = "X"
+
+    print("Игра началась! Крестики-нолики")
+    print("Номера клеток: 1-9")
+    print_board(board)
+
+    for _ in range(9):
+        while True:
+            try:
+                move = int(input(f"Игрок {current_player}, выберите клетку (1-9): ")) - 1
+            except ValueError:
+                print("Введите число от 1 до 9!")
+                continue
+
+            if move < 0 or move > 8:
+                print("Число должно быть от 1 до 9!")
+                continue
+
+            if board[move] != " ":
+                print("Эта клетка уже занята!")
+                continue
+
+            board[move] = current_player
+            break
+
+        print_board(board)
+
+        winner = check_winner(board)
+        if winner:
+            print(f"Победил игрок {winner}!")
+            return
+
+        if is_draw(board):
+            print("Ничья!")
+            return
+
+        current_player = "O" if current_player == "X" else "X"
+
+    print("Ничья!")
+    return
+
+
+if __name__ == "__main__":
+    play()
