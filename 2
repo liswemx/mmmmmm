@@ -1,0 +1,263 @@
+// Клеточная лаборатория — игра по TASK.md @eefiryy
+
+const ORGANELLES = [
+  { key: "nucleus",      name: "Ядро",        icon: "🧬" }, // 1F9EC, Unicode 11
+  { key: "membrane",     name: "Мембрана",    icon: "💠" }, // 1F4A0, Unicode 6.0
+  { key: "mitochondria", name: "Митохондрия", icon: "⚡" }, // 26A1, Unicode 4.0
+  { key: "ribosome",     name: "Рибосома",    icon: "🔬" }, // 1F52C, Unicode 6.0
+  { key: "chloroplast",  name: "Хлоропласт",  icon: "🌿" }, // 1F33F, Unicode 6.0
+  { key: "vacuole",      name: "Вакуоль",     icon: "💧" }, // 1F4A7, Unicode 6.0
+];
+const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
+
+const COMBOS = [
+  { id: "simple_cell",  title: "Простая клетка",       points: 10,
+    match: ks => ks.length === 2 && ks.includes("nucleus") && ks.includes("membrane") },
+  { id: "clone",        title: "Клон",                 points: 15,
+    match: ks => ks.length === 3 && new Set(ks).size === 1 },
+  { id: "eukaryote",    title: "Эукариот с энергией",  points: 25,
+    match: ks => ks.length === 3 && ks.includes("nucleus") && ks.includes("membrane") && ks.includes("mitochondria") },
+  { id: "plant_cell",   title: "Растительная клетка",  points: 30,
+    match: ks => ks.length === 3 && ks.includes("nucleus") && ks.includes("membrane") && ks.includes("chloroplast") },
+  { id: "full_cell",    title: "Полноценная клетка",   points: 40,
+    match: ks => ks.length === 4 && ks.includes("nucleus") && ks.includes("membrane") && ks.includes("mitochondria") && ks.includes("ribosome") },
+  { id: "biodiversity", title: "Биоразнообразие",      points: 50,
+    match: ks => ks.length === 5 && new Set(ks).size === 5 },
+];
+
+const ROUNDS = 10;
+const UPGRADE_THRESHOLD = 50;
+const BASE_MAX_SELECTION = 5;
+const EXTENDED_MAX_SELECTION = 6;
+const POOL_SIZE = 6;
+const FAST_EVOLUTION_MULTIPLIER = 1.5;
+
+const INITIAL_STATE = Object.freeze({
+  score: 0,
+  turn: 1,
+  maxSelection: BASE_MAX_SELECTION,
+  multiplier: 1,
+  preciseAvailable: false,
+  upgradeOffered: false,
+  running: true,
+});
+
+function cloneState(src) {
+  return {
+    score: src.score,
+    turn: src.turn,
+    maxSelection: src.maxSelection,
+    multiplier: src.multiplier,
+    preciseAvailable: src.preciseAvailable,
+    upgradeOffered: src.upgradeOffered,
+    running: src.running,
+    pool: [],
+    selected: new Set(),
+  };
+}
+
+let state = cloneState(INITIAL_STATE);
+let _id = 0;
+const nextId = () => ++_id;
+
+const els = {
+  score: document.getElementById("score"),
+  turn: document.getElementById("turn"),
+  multiplier: document.getElementById("multiplier"),
+  organelles: document.getElementById("organelles"),
+  currentList: document.getElementById("current-list"),
+  comboInfo: document.getElementById("combo-info"),
+  confirm: document.getElementById("confirm"),
+  resetSelection: document.getElementById("reset-selection"),
+  removeOne: document.getElementById("remove-one"),
+  message: document.getElementById("message"),
+  upgrades: document.getElementById("upgrades"),
+  gameover: document.getElementById("gameover"),
+  finalScore: document.getElementById("final-score"),
+  restart: document.getElementById("restart"),
+};
+
+function selectedKeys() {
+  return [...state.selected]
+    .map(id => state.pool.find(p => p.id === id)?.key)
+    .filter(Boolean);
+}
+function findCombo(keys) {
+  if (keys.length === 0) return null;
+  return COMBOS.find(c => c.match(keys)) || null;
+}
+
+function renderHud() {
+  els.score.textContent = state.score;
+  els.turn.textContent = state.turn;
+  els.multiplier.textContent = "×" + state.multiplier.toString().replace(".", ",");
+}
+
+function renderPool() {
+  els.organelles.innerHTML = "";
+  state.pool.forEach(item => {
+    const info = ORGANELLES.find(o => o.key === item.key);
+    const btn = document.createElement("button");
+    btn.className = "organelle" + (state.selected.has(item.id) ? " selected" : "");
+    btn.dataset.id = item.id;
+    btn.innerHTML = `<span class="icon">${info.icon}</span>${info.name}`;
+    btn.addEventListener("click", () => toggleSelect(item.id));
+    els.organelles.appendChild(btn);
+  });
+}
+
+function renderCurrent() {
+  els.currentList.innerHTML = "";
+  const keys = selectedKeys();
+  keys.forEach(k => {
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.textContent = NAMES[k];
+    els.currentList.appendChild(chip);
+  });
+
+  const combo = findCombo(keys);
+  if (keys.length === 0) {
+    els.comboInfo.textContent = "Комбинация: —";
+    els.comboInfo.classList.remove("valid");
+  } else if (combo) {
+    const total = Math.round(combo.points * state.multiplier);
+    els.comboInfo.textContent = `Комбинация: ${combo.title} — ${total} очков`;
+    els.comboInfo.classList.add("valid");
+  } else {
+    els.comboInfo.textContent = "Комбинация: неизвестная (нельзя подтвердить)";
+    els.comboInfo.classList.remove("valid");
+  }
+
+  els.confirm.disabled = !combo || !state.running;
+  els.removeOne.disabled = !(state.running && state.preciseAvailable && state.selected.size > 0);
+}
+
+function toggleSelect(id) {
+  if (!state.running) return;
+  if (state.selected.has(id)) {
+    state.selected.delete(id);
+  } else {
+    if (state.selected.size >= state.maxSelection) {
+      flash(`Максимум ${state.maxSelection} элементов в наборе`);
+      return;
+    }
+    state.selected.add(id);
+  }
+  renderPool();
+  renderCurrent();
+}
+
+function flash(text) {
+  els.message.textContent = text;
+  clearTimeout(flash._t);
+  flash._t = setTimeout(() => { els.message.textContent = ""; }, 1300);
+}
+
+function refillPool() {
+  while (state.pool.length < POOL_SIZE) {
+    state.pool.push({ key: randomOrganelleKey(), id: nextId() });
+  }
+}
+
+function randomOrganelleKey() {
+  return ORGANELLES[Math.floor(Math.random() * ORGANELLES.length)].key;
+}
+
+function confirmCombo() {
+  const keys = selectedKeys();
+  const combo = findCombo(keys);
+  if (!combo || !state.running) return;
+
+  const gained = Math.round(combo.points * state.multiplier);
+  state.score += gained;
+  flash(`+${gained} (${combo.title})`);
+
+  const usedIds = new Set(state.selected);
+  state.pool = state.pool.filter(p => !usedIds.has(p.id));
+  state.selected.clear();
+  refillPool();
+
+  state.turn += 1;
+  renderHud();
+  renderPool();
+  renderCurrent();
+
+  if (!state.upgradeOffered && state.score >= UPGRADE_THRESHOLD) {
+    offerUpgrade();
+    return;
+  }
+  if (state.turn > ROUNDS) endGame();
+}
+
+function offerUpgrade() {
+  state.upgradeOffered = true;
+  state.running = false;
+  els.upgrades.hidden = false;
+  els.confirm.disabled = true;
+  els.removeOne.disabled = true;
+}
+
+function pickUpgrade(name) {
+  if (name === "fast_evolution") state.multiplier = FAST_EVOLUTION_MULTIPLIER;
+  if (name === "precise_selection") state.preciseAvailable = true;
+  if (name === "cell_division") state.maxSelection = EXTENDED_MAX_SELECTION;
+
+  els.upgrades.hidden = true;
+  state.running = true;
+  renderHud();
+  renderCurrent();
+
+  if (state.turn > ROUNDS) endGame();
+}
+
+function removeOne() {
+  if (!state.preciseAvailable || state.selected.size === 0) return;
+  const firstId = [...state.selected][0];
+  state.selected.delete(firstId);
+  state.preciseAvailable = false;
+  renderPool();
+  renderCurrent();
+  flash("Точный отбор использован: один элемент сброшен");
+}
+
+function endGame() {
+  state.running = false;
+  els.gameover.hidden = false;
+  els.finalScore.textContent = state.score;
+  els.confirm.disabled = true;
+  els.removeOne.disabled = true;
+}
+
+function restart() {
+  _id = 0;
+  const fresh = cloneState(INITIAL_STATE);
+  Object.assign(state, fresh);
+
+  ORGANELLES.forEach(o => state.pool.push({ key: o.key, id: nextId() }));
+
+  els.gameover.hidden = true;
+  els.upgrades.hidden = true;
+  els.message.textContent = "";
+
+  renderHud();
+  renderPool();
+  renderCurrent();
+}
+
+els.confirm.addEventListener("click", confirmCombo);
+els.resetSelection.addEventListener("click", () => {
+  if (!state.running) return;
+  state.selected.clear();
+  renderPool();
+  renderCurrent();
+});
+els.removeOne.addEventListener("click", removeOne);
+els.restart.addEventListener("click", restart);
+els.upgrades.addEventListener("click", e => {
+  const btn = e.target.closest(".upgrade");
+  if (!btn) return;
+  pickUpgrade(btn.dataset.upgrade);
+});
+
+restart();
