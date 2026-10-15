@@ -35,10 +35,7 @@ def is_draw(board):
                 print("Введите число от 1 до 9!")
                 continue
 
-            if move < 0 or move > 8:
-                print("Число должно быть от 1 до 9!")
-                continue
-
+            
             if board[move] != " ":
                 print("Эта клетка уже занята!")
                 continue
