@@ -23,10 +23,6 @@ def play():
             except ValueError:
                 print("Введите число от 1 до 9!")
                 continue
-
-
-de
-
     for a, b, c in winning_combinations:
         if board[a] == board[b] == board[c] and board[a] != " ":
             return board[a]
