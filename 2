@@ -10,20 +10,6 @@ const ORGANELLES = [
 ];
 const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
 
-const COMBOS = [
-  { id: "simple_cell",  title: "Простая клетка",       points: 10,
-    match: ks => ks.length === 2 && ks.includes("nucleus") && ks.includes("membrane") },
-  { id: "clone",        title: "Клон",                 points: 15,
-    match: ks => ks.length === 3 && new Set(ks).size === 1 },
-  { id: "eukaryote",    title: "Эукариот с энергией",  points: 25,
-    match: ks => ks.length === 3 && ks.includes("nucleus") && ks.includes("membrane") && ks.includes("mitochondria") },
-  { id: "plant_cell",   title: "Растительная клетка",  points: 30,
-    match: ks => ks.length === 3 && ks.includes("nucleus") && ks.includes("membrane") && ks.includes("chloroplast") },
-  { id: "full_cell",    title: "Полноценная клетка",   points: 40,
-    match: ks => ks.length === 4 && ks.includes("nucleus") && ks.includes("membrane") && ks.includes("mitochondria") && ks.includes("ribosome") },
-  { id: "biodiversity", title: "Биоразнообразие",      points: 50,
-    match: ks => ks.length === 5 && new Set(ks).size === 5 },
-];
 
 const ROUNDS = 10;
 const UPGRADE_THRESHOLD = 50;
