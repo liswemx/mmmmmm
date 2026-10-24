@@ -11,23 +11,6 @@ const ORGANELLES = [
 const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
 
 
-const ROUNDS = 10;
-const UPGRADE_THRESHOLD = 50;
-const BASE_MAX_SELECTION = 5;
-const EXTENDED_MAX_SELECTION = 6;
-const POOL_SIZE = 6;
-const FAST_EVOLUTION_MULTIPLIER = 1.5;
-
-const INITIAL_STATE = Object.freeze({
-  score: 0,
-  turn: 1,
-  maxSelection: BASE_MAX_SELECTION,
-  multiplier: 1,
-  preciseAvailable: false,
-  upgradeOffered: false,
-  running: true,
-});
-
 function cloneState(src) {
   return {
     score: src.score,
