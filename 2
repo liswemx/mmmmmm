@@ -11,20 +11,6 @@ const ORGANELLES = [
 const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
 
 
-function cloneState(src) {
-  return {
-    score: src.score,
-    turn: src.turn,
-    maxSelection: src.maxSelection,
-    multiplier: src.multiplier,
-    preciseAvailable: src.preciseAvailable,
-    upgradeOffered: src.upgradeOffered,
-    running: src.running,
-    pool: [],
-    selected: new Set(),
-  };
-}
-
 let state = cloneState(INITIAL_STATE);
 let _id = 0;
 const nextId = () => ++_id;
