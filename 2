@@ -30,17 +30,6 @@ const els = {
   gameover: document.getElementById("gameover"),
   finalScore: document.getElementById("final-score"),
   restart: document.getElementById("restart"),
-};
-
-function selectedKeys() {
-  return [...state.selected]
-    .map(id => state.pool.find(p => p.id === id)?.key)
-    .filter(Boolean);
-}
-function findCombo(keys) {
-  if (keys.length === 0) return null;
-  return COMBOS.find(c => c.match(keys)) || null;
-}
 
 function renderHud() {
   els.score.textContent = state.score;
