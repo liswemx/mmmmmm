@@ -15,22 +15,6 @@ let state = cloneState(INITIAL_STATE);
 let _id = 0;
 const nextId = () => ++_id;
 
-const els = {
-  score: document.getElementById("score"),
-  turn: document.getElementById("turn"),
-  multiplier: document.getElementById("multiplier"),
-  organelles: document.getElementById("organelles"),
-  currentList: document.getElementById("current-list"),
-  comboInfo: document.getElementById("combo-info"),
-  confirm: document.getElementById("confirm"),
-  resetSelection: document.getElementById("reset-selection"),
-  removeOne: document.getElementById("remove-one"),
-  message: document.getElementById("message"),
-  upgrades: document.getElementById("upgrades"),
-  gameover: document.getElementById("gameover"),
-  finalScore: document.getElementById("final-score"),
-  restart: document.getElementById("restart"),
-
 function renderHud() {
   els.score.textContent = state.score;
   els.turn.textContent = state.turn;
