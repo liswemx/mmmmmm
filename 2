@@ -32,17 +32,6 @@ function renderPool() {
     btn.addEventListener("click", () => toggleSelect(item.id));
     els.organelles.appendChild(btn);
   });
-}
-
-function renderCurrent() {
-  els.currentList.innerHTML = "";
-  const keys = selectedKeys();
-  keys.forEach(k => {
-    const chip = document.createElement("span");
-    chip.className = "chip";
-    chip.textContent = NAMES[k];
-    els.currentList.appendChild(chip);
-  });
 
   const combo = findCombo(keys);
   if (keys.length === 0) {
