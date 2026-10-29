@@ -11,15 +11,7 @@ const ORGANELLES = [
 const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
 
 
-let state = cloneState(INITIAL_STATE);
-let _id = 0;
-const nextId = () => ++_id;
 
-function renderHud() {
-  els.score.textContent = state.score;
-  els.turn.textContent = state.turn;
-  els.multiplier.textContent = "×" + state.multiplier.toString().replace(".", ",");
-}
 
 function renderPool() {
   els.organelles.innerHTML = "";
