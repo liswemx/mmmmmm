@@ -13,17 +13,6 @@ const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
 
 
 
-function renderPool() {
-  els.organelles.innerHTML = "";
-  state.pool.forEach(item => {
-    const info = ORGANELLES.find(o => o.key === item.key);
-    const btn = document.createElement("button");
-    btn.className = "organelle" + (state.selected.has(item.id) ? " selected" : "");
-    btn.dataset.id = item.id;
-    btn.innerHTML = `<span class="icon">${info.icon}</span>${info.name}`;
-    btn.addEventListener("click", () => toggleSelect(item.id));
-    els.organelles.appendChild(btn);
-  });
 
   const combo = findCombo(keys);
   if (keys.length === 0) {
