@@ -13,25 +13,6 @@ const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
 
 
 
-
-  const combo = findCombo(keys);
-  if (keys.length === 0) {
-    els.comboInfo.textContent = "Комбинация: —";
-    els.comboInfo.classList.remove("valid");
-  } else if (combo) {
-    const total = Math.round(combo.points * state.multiplier);
-    els.comboInfo.textContent = `Комбинация: ${combo.title} — ${total} очков`;
-    els.comboInfo.classList.add("valid");
-  } else {
-    els.comboInfo.textContent = "Комбинация: неизвестная (нельзя подтвердить)";
-    els.comboInfo.classList.remove("valid");
-  }
-
-  els.confirm.disabled = !combo || !state.running;
-  els.removeOne.disabled = !(state.running && state.preciseAvailable && state.selected.size > 0);
-}
-
-
 function flash(text) {
   els.message.textContent = text;
   clearTimeout(flash._t);
