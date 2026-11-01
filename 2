@@ -31,20 +31,6 @@ const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
   els.removeOne.disabled = !(state.running && state.preciseAvailable && state.selected.size > 0);
 }
 
-function toggleSelect(id) {
-  if (!state.running) return;
-  if (state.selected.has(id)) {
-    state.selected.delete(id);
-  } else {
-    if (state.selected.size >= state.maxSelection) {
-      flash(`Максимум ${state.maxSelection} элементов в наборе`);
-      return;
-    }
-    state.selected.add(id);
-  }
-  renderPool();
-  renderCurrent();
-}
 
 function flash(text) {
   els.message.textContent = text;
