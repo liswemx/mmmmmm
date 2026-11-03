@@ -11,24 +11,6 @@ const ORGANELLES = [
 const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
 
 
-
-
-function flash(text) {
-  els.message.textContent = text;
-  clearTimeout(flash._t);
-  flash._t = setTimeout(() => { els.message.textContent = ""; }, 1300);
-}
-
-function refillPool() {
-  while (state.pool.length < POOL_SIZE) {
-    state.pool.push({ key: randomOrganelleKey(), id: nextId() });
-  }
-}
-
-function randomOrganelleKey() {
-  return ORGANELLES[Math.floor(Math.random() * ORGANELLES.length)].key;
-}
-
 function confirmCombo() {
   const keys = selectedKeys();
   const combo = findCombo(keys);
