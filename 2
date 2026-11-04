@@ -11,15 +11,6 @@ const ORGANELLES = [
 const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
 
 
-function confirmCombo() {
-  const keys = selectedKeys();
-  const combo = findCombo(keys);
-  if (!combo || !state.running) return;
-
-  const gained = Math.round(combo.points * state.multiplier);
-  state.score += gained;
-  flash(`+${gained} (${combo.title})`);
-
   const usedIds = new Set(state.selected);
   state.pool = state.pool.filter(p => !usedIds.has(p.id));
   state.selected.clear();
