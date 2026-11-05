@@ -16,17 +16,6 @@ const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
   state.selected.clear();
   refillPool();
 
-  state.turn += 1;
-  renderHud();
-  renderPool();
-  renderCurrent();
-
-  if (!state.upgradeOffered && state.score >= UPGRADE_THRESHOLD) {
-    offerUpgrade();
-    return;
-  }
-  if (state.turn > ROUNDS) endGame();
-}
 
 function offerUpgrade() {
   state.upgradeOffered = true;
