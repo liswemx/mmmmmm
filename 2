@@ -38,16 +38,6 @@ function pickUpgrade(name) {
   if (state.turn > ROUNDS) endGame();
 }
 
-function removeOne() {
-  if (!state.preciseAvailable || state.selected.size === 0) return;
-  const firstId = [...state.selected][0];
-  state.selected.delete(firstId);
-  state.preciseAvailable = false;
-  renderPool();
-  renderCurrent();
-  flash("Точный отбор использован: один элемент сброшен");
-}
-
 function endGame() {
   state.running = false;
   els.gameover.hidden = false;
