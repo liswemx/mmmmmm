@@ -16,15 +16,6 @@ const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
   state.selected.clear();
   refillPool();
 
-
-function offerUpgrade() {
-  state.upgradeOffered = true;
-  state.running = false;
-  els.upgrades.hidden = false;
-  els.confirm.disabled = true;
-  els.removeOne.disabled = true;
-}
-
 function pickUpgrade(name) {
   if (name === "fast_evolution") state.multiplier = FAST_EVOLUTION_MULTIPLIER;
   if (name === "precise_selection") state.preciseAvailable = true;
