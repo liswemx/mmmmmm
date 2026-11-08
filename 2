@@ -27,15 +27,6 @@ function pickUpgrade(name) {
   renderCurrent();
 
   if (state.turn > ROUNDS) endGame();
-}
-
-function endGame() {
-  state.running = false;
-  els.gameover.hidden = false;
-  els.finalScore.textContent = state.score;
-  els.confirm.disabled = true;
-  els.removeOne.disabled = true;
-}
 
 function restart() {
   _id = 0;
