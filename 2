@@ -16,17 +16,6 @@ const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
   state.selected.clear();
   refillPool();
 
-function pickUpgrade(name) {
-  if (name === "fast_evolution") state.multiplier = FAST_EVOLUTION_MULTIPLIER;
-  if (name === "precise_selection") state.preciseAvailable = true;
-  if (name === "cell_division") state.maxSelection = EXTENDED_MAX_SELECTION;
-
-  els.upgrades.hidden = true;
-  state.running = true;
-  renderHud();
-  renderCurrent();
-
-  if (state.turn > ROUNDS) endGame();
 
 function restart() {
   _id = 0;
