@@ -14,23 +14,7 @@ const NAMES = Object.fromEntries(ORGANELLES.map(o => [o.key, o.name]));
   const usedIds = new Set(state.selected);
   state.pool = state.pool.filter(p => !usedIds.has(p.id));
   state.selected.clear();
-  refillPool();
-
-
-function restart() {
-  _id = 0;
-  const fresh = cloneState(INITIAL_STATE);
-  Object.assign(state, fresh);
-
-  ORGANELLES.forEach(o => state.pool.push({ key: o.key, id: nextId() }));
-
-  els.gameover.hidden = true;
-  els.upgrades.hidden = true;
-  els.message.textContent = "";
-
-  renderHud();
-  renderPool();
-  renderCurrent();
+  refillPъ
 }
 
 els.confirm.addEventListener("click", confirmCombo);
