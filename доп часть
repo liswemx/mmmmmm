@@ -12,22 +12,6 @@ def play():
     board = [" "] * 9
     current_player = "X"
 
-    print("Игра началась! Крестики-нолики")
-    print("Номера клеток: 1-9")
-    print_board(board)
-
-    for _ in range(9):
-        while True:
-            try:
-                move = int(input(f"Игрок {current_player}, выберите клетку (1-9): ")) - 1
-            except ValueError:
-                print("Введите число от 1 до 9!")
-                continue
-    for a, b, c in winning_combinations:
-        if board[a] == board[b] == board[c] and board[a] != " ":
-            return board[a]
-
-    return None
-
+  
 
 def is_draw(board):
