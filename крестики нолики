@@ -20,15 +20,4 @@ def is_draw(board):
             print(f"Победил игрок {winner}!")
             return
 
-        if is_draw(board):
-            print("Ничья!")
-            return
-
-        current_player = "O" if current_player == "X" else "X"
-
-    print("Ничья!")
-    return
-
-
-if __name__ == "__main__":
-    play()
+      
