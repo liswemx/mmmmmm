@@ -1,6 +1,4 @@
 def print_board(board):
     print("\n")
     for i in range(3):
-        row = " | ".join(board[i * 3:(i + 1) * 3])
-        
 
